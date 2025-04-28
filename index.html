@@ -185,18 +185,18 @@
     <script>
         // Music playback control
         const audio = document.getElementById('background-music');
-const playlist = ['musicas/musica1.mp3', 'musicas/musica2.mp3', 'musicas/musica3.mp3'];
-let currentTrack = 0;
+        const playlist = [
+            'path/to/until_i_found_you.mp3',
+            'path/to/love_story_indila.mp3',
+            'path/to/te_amo_disgraca_baco.mp3'
+        ];
+        let currentTrack = 0;
 
-function playNextTrack() {
-    currentTrack = (currentTrack + 1) % playlist.length;
-    audio.src = playlist[currentTrack];
-    audio.play().catch((error) => console.error('Erro ao tocar áudio:', error));
-}
-
-audio.addEventListener('ended', playNextTrack);
-audio.src = playlist[currentTrack];
-            });
+        audio.addEventListener('ended', () => {
+            currentTrack = (currentTrack + 1) % playlist.length;
+            audio.src = playlist[currentTrack];
+            audio.play();
+        });
 
         // Start music when intro disappears
         setTimeout(() => {
