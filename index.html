@@ -92,9 +92,7 @@
 
         <!-- Form Section -->
         <div id="form-section" class="bg-white p-6 rounded-lg shadow-lg z-10 max-w-md w-full">
-            <h2 class="text-2xl font-bold
-
- mb-4 text-center">Responda algumas perguntinhas, meu amor!</h2>
+            <h2 class="text-2xl font-bold mb-4 text-center">Responda algumas perguntinhas, meu amor!</h2>
             <form id="info-form" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium">Nome completo</label>
@@ -154,7 +152,10 @@
             <div class="ring">
                 <div id="message-text" class="ring-text"></div>
             </div>
-            <button id="next-paragraph" class="mt-4 bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">➡️</button>
+            <div class="flex space-x-4 mt-4">
+                <button id="prev-paragraph" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">⬅️</button>
+                <button id="next-paragraph" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">➡️</button>
+            </div>
         </div>
     </div>
 
@@ -398,7 +399,7 @@
             "E sim eu morrerei antes de vc pq acho que se vc morrer antes eu morro junto de coração partido (sim é possível). E assim, nenhum escritor jamais diria ou chegaria perto do quanto amo você. Mas sinceramente eu faria o mesmo que Romeu fez pela Julieta se no final fosse para estar junto de você. Faria o mesmo que qualquer livro de romance descreve em suas folhas. Seja isso um jantar a luz de velas ou algo muito mais extremo.",
             "Portanto que no final eu veja seu sorriso, tudo vale a pena. Sol e lua? Ahn? Pelo amor de Deus, que amor pequeno, comparado ao que sinto por você, sério nem chega perto. Posso não ter sido seu primeiro, mas espero poder ser seu último. Vc me mostrou que o amor é feito de altos e baixos, escolhas e promessas, risos e choro, mas mesmo com tudo isso, você me deu um novo jeito de pensar na palavra 'amor' um jeito um bilhão de vezes mais intenso e mais belo do que eu pensava conhecer.",
             "E sinceramente, se o sol escutasse meus pensamentos, com toda certeza se apaixonaria por vc tbm, e ele iria misteriosamente desaparecer no próximo dia 😅. Vc é tão pura quanto uma nota musical e tão doce quanto uma melodia, você é a música que toca em minha mente, desde quando te conhecí. Vc simplesmente é a flor mais bela do meu jardim, a flor na qual quero regar todos os dias e preservar e poder contar a todos que é meu maior tesouro.",
-            "E essa é uma frase clichê que eu vi no TikTok, mas se eu tivesse que escolher entre respirar ou te amar, eu com toda certeza usaria meu último suspiro para dizer que eu te amo. E eu posso te garantir que aquele bagulho de 'até depois da morte te amarei' será real, até pq mesmo com minha alma morta, ela continuará viva pelo seu amor."
+            "E essa é uma frase clichê que eu vi no TikTok, but se eu tivesse que escolher entre respirar ou te amar, eu com toda certeza usaria meu último suspiro para dizer que eu te amo. E eu posso te garantir que aquele bagulho de 'até depois da morte te amarei' será real, até pq mesmo com minha alma morta, ela continuará viva pelo seu amor."
         ];
         let currentParagraph = 0;
 
@@ -406,6 +407,7 @@
             console.log('Exibindo parágrafo:', index);
             document.getElementById('message-text').textContent = paragraphs[index];
             document.getElementById('next-paragraph').disabled = index === paragraphs.length - 1;
+            document.getElementById('prev-paragraph').disabled = index === 0;
         }
 
         const nextParagraphBtn = document.getElementById('next-paragraph');
@@ -419,6 +421,19 @@
             });
         } else {
             console.error('Botão next-paragraph não encontrado');
+        }
+
+        const prevParagraphBtn = document.getElementById('prev-paragraph');
+        if (prevParagraphBtn) {
+            prevParagraphBtn.addEventListener('click', () => {
+                console.log('Botão Parágrafo anterior clicado');
+                if (currentParagraph > 0) {
+                    currentParagraph--;
+                    showParagraph(currentParagraph);
+                }
+            });
+        } else {
+            console.error('Botão prev-paragraph não encontrado');
         }
     </script>
 </body>
