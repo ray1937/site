@@ -3,275 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feliz 3 Meses, Meu Amor</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>MultiEtapas</title>
     <style>
-        @keyframes fall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0.5;
-            }
+        /* Estilos CSS */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
         }
-        .heart {
-            position: absolute;
-            font-size: 24px;
-            color: white;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-            animation: fall 6s linear infinite;
-            pointer-events: none;
-            width: 40px;
-            height: 40px;
+        .step {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+        }
+        .step.active {
+            display: block;
+        }
+        .buttons {
+            margin-top: 20px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            left: 0;
+            justify-content: space-between;
         }
-        .heart::before {
-            content: '♥';
-            position: absolute;
-            font-size: 40px;
-            color: red;
-            z-index: 1;
-        }
-        .heart span {
-            position: relative;
-            z-index: 2;
-            font-size: 20px;
+        button {
+            background-color: #4CAF50;
             color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
-        .ring {
-            width: 300px;
-            height: 300px;
-            border: 10px solid silver;
-            border-radius: 50%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle, #f3f4f6, #e5e7eb);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-        }
-        .ring-text {
-            width: 80%;
-            height: 80%;
-            overflow-y: auto;
-            padding: 10px;
-            font-size: 14px;
-            color: #1f2937;
-            text-align: center;
+        button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
-<body class="bg-black min-h-screen flex items-center justify-center overflow-hidden">
+<body>
 
-    <!-- Audio Player -->
-    <audio id="background-music" autoplay loop hidden>
-        <source src="musicas/musica1.mp3" type="audio/mp3">
-        <source src="musicas/musica2.mp3" type="audio/mp3">
-        <source src="musicas/musica3.mp3" type="audio/mp3">
-        Your browser does not support the audio element.
-    </audio>
+<audio id="background-music" loop>
+    <source src="musicas/musica1.mp3" type="audio/mp3">
+    Seu navegador não suporta áudio.
+</audio>
 
-    <!-- Intro Message -->
-    <div id="intro" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
-        <p class="text-white text-2xl md:text-4xl text-center p-4 animate-pulse">
-            Site feito por Gustavo Henrique, esse retardado que você namora conseguiu programar um site enquanto você dormia.
-        </p>
+<div id="step1" class="step active">
+    <h2>Etapa 1</h2>
+    <p>Conteúdo da primeira etapa.</p>
+    <div class="buttons">
+        <span></span>
+        <button onclick="nextStep()">Próximo</button>
     </div>
+</div>
 
-    <!-- Main Content -->
-    <div id="main" class="hidden relative w-full h-screen flex items-center justify-center">
-
-        <!-- Hearts Background -->
-        <div id="hearts"></div>
-
-        <!-- Form Section -->
-        <div id="form-section" class="bg-white p-6 rounded-lg shadow-lg z-10 max-w-md w-full">
-            <h2 class="text-2xl font-bold mb-4 text-center">Responda algumas perguntinhas, meu amor!</h2>
-            <form id="info-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium">Nome completo</label>
-                    <input type="text" name="name" required class="w-full p-2 border rounded">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Idade</label>
-                    <input type="number" name="age" required class="w-full p-2 border rounded">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Data de nascimento</label>
-                    <input type="date" name="dob" required class="w-full p-2 border rounded">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Comida favorita</label>
-                    <input type="text" name="food" required class="w-full p-2 border rounded">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Filme favorito</label>
-                    <input type="text" name="movie" required class="w-full p-2 border rounded">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Seu nível de beleza</label>
-                    <input type="number" name="beauty" id="beauty-input" required class="w-full p-2 border rounded">
-                    <p id="beauty-error" class="text-red-500 text-sm hidden">Errou uma pergunta!</p>
-                </div>
-                <button type="submit" class="w-full bg-pink-500 text-white p-2 rounded hover:bg-pink-600">Confirmar</button>
-            </form>
-        </div>
-
-        <!-- Basic Questions -->
-        <div id="basic-questions" class="hidden text-white text-3xl font-bold text-center z-10">
-            Algumas perguntinhas básicas...
-        </div>
-
-        <!-- Yes/No Section -->
-        <div id="yes-no-section" class="hidden flex flex-col items-center justify-center z-10">
-            <p id="question" class="text-white text-2xl md:text-3xl font-bold text-center mb-8"></p>
-            <div class="flex space-x-4">
-                <button id="yes-btn" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">Sim</button>
-                <button id="no-btn" class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600">Não</button>
-            </div>
-        </div>
-
-        <!-- Final Message -->
-        <div id="final" class="hidden flex flex-col items-center justify-center z-10">
-            <div class="ring">
-                <div id="message-text" class="ring-text"></div>
-            </div>
-            <button id="next-paragraph" class="mt-4 bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">➡️</button>
-        </div>
-
+<div id="step2" class="step">
+    <h2>Etapa 2</h2>
+    <p>Conteúdo da segunda etapa.</p>
+    <div class="buttons">
+        <button onclick="previousStep()">Anterior</button>
+        <button onclick="nextStep()">Próximo</button>
     </div>
+</div>
 
-    <script>
+<div id="step3" class="step">
+    <h2>Etapa 3</h2>
+    <p>Conteúdo da terceira etapa.</p>
+    <div class="buttons">
+        <button onclick="previousStep()">Anterior</button>
+        <button onclick="finish()">Finalizar</button>
+    </div>
+</div>
+
+<script>
+    // Variável para controlar a etapa atual
+    let currentStep = 1;
+
+    function showStep(step) {
+        // Esconde todas as etapas
+        document.querySelectorAll('.step').forEach(function (el) {
+            el.classList.remove('active');
+        });
+        // Mostra apenas a etapa atual
+        document.getElementById('step' + step).classList.add('active');
+    }
+
+    function nextStep() {
+        if (currentStep < 3) {
+            currentStep++;
+            showStep(currentStep);
+        }
+    }
+
+    function previousStep() {
+        if (currentStep > 1) {
+            currentStep--;
+            showStep(currentStep);
+        }
+    }
+
+    function finish() {
+        alert('Finalizado!');
+    }
+
+    // Correção: tocar música só após clique
+    document.addEventListener('click', () => {
         const audio = document.getElementById('background-music');
-        const playlist = [
-            'musicas/musica1.mp3',
-            'musicas/musica2.mp3',
-            'musicas/musica3.mp3'
-        ];
-        let currentTrack = 0;
-
-        audio.addEventListener('ended', () => {
-            currentTrack = (currentTrack + 1) % playlist.length;
-            audio.src = playlist[currentTrack];
-            audio.play();
-        });
-
-        setTimeout(() => {
-            document.getElementById('intro').classList.add('hidden');
-            document.getElementById('main').classList.remove('hidden');
-            audio.play();
-            createHearts();
-        }, 5000);
-
-        function createHearts() {
-            const heartsContainer = document.getElementById('hearts');
-            function addHeart() {
-                const heart = document.createElement('div');
-                heart.className = 'heart';
-                const initial = Math.random() > 0.5 ? 'G' : 'M';
-                heart.innerHTML = `<span>${initial}</span>`;
-                heart.style.left = `${Math.random() * window.innerWidth}px`;
-                heart.style.animationDuration = `${5 + Math.random() * 3}s`;
-                heart.style.animationDelay = `${Math.random() * 2}s`;
-                heartsContainer.appendChild(heart);
-                setTimeout(() => heart.remove(), 8000);
-            }
-            setInterval(addHeart, 500);
+        if (audio.paused) {
+            audio.play().catch(error => {
+                console.log('Erro ao tentar tocar música:', error);
+            });
         }
+    }, { once: true });
 
-        const form = document.getElementById('info-form');
-        const beautyInput = document.getElementById('beauty-input');
-        const beautyError = document.getElementById('beauty-error');
-
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const beautyValue = parseInt(beautyInput.value);
-            if (beautyValue < 9999999999999999999) {
-                beautyError.classList.remove('hidden');
-                beautyInput.value = '9999999999999999999';
-                setTimeout(() => {
-                    beautyError.classList.add('hidden');
-                }, 2000);
-            } else {
-                document.getElementById('form-section').classList.add('hidden');
-                document.getElementById('basic-questions').classList.remove('hidden');
-                setTimeout(() => {
-                    document.getElementById('basic-questions').classList.add('hidden');
-                    document.getElementById('yes-no-section').classList.remove('hidden');
-                    showQuestion(0);
-                }, 3000);
-            }
-        });
-
-        const questions = [
-            "Você vai se casar comigo?",
-            "Quando estivermos juntos vai rolar cuzinho?",
-            "Aceita ter pelo menos um filho(a) comigo?",
-            "Aceita fazer noites divertidas de jogos ou filmes comigo?",
-            "Aceita rir por besteiras olhando para o teto deitados na cama?",
-            "Aceita ir num rodízio de pudim comigo?",
-            "Aceita ser minha parceira pela eternidade para que nem a morte nos separe?"
-        ];
-        let currentQuestion = 0;
-
-        function showQuestion(index) {
-            if (index >= questions.length) {
-                document.getElementById('yes-no-section').classList.add('hidden');
-                document.getElementById('final').classList.remove('hidden');
-                showParagraph(0);
-                return;
-            }
-            document.getElementById('question').textContent = questions[index];
-        }
-
-        document.getElementById('yes-btn').addEventListener('click', () => {
-            currentQuestion++;
-            showQuestion(currentQuestion);
-        });
-
-        const noBtn = document.getElementById('no-btn');
-        noBtn.addEventListener('mouseover', () => {
-            const maxX = window.innerWidth - noBtn.offsetWidth;
-            const maxY = window.innerHeight - noBtn.offsetHeight;
-            noBtn.style.position = 'absolute';
-            noBtn.style.left = `${Math.random() * maxX}px`;
-            noBtn.style.top = `${Math.random() * maxY}px`;
-        });
-
-        const paragraphs = [
-            "Oioi meu amor, feliz 3 meses! Já se passaram 3 meses, e percebi como sou ciumento, mas também como te amo cada vez mais...",
-            "Seu abraço deve ser o mais quentinho e gostoso do mundo, e eu mal posso esperar para te abraçar!",
-            "Desde o dia em que te conheci naquele grupo, nunca imaginei que você se tornaria tão essencial pra mim.",
-            "Cada detalhe seu me encanta cada vez mais, seu sorriso ilumina até os dias mais difíceis.",
-            "Mal posso esperar para fazer muitos cafunés no seu cabelo lindo e macio!",
-            "O anel é redondo, pois ele representa algo infinito. Assim é meu amor por você: sem fim.",
-            "No futuro, vamos olhar para tudo isso e sorrir, sabendo que mantivemos nosso amor vivo.",
-            "Nada vai abalar o que temos. Pode olhar meu celular se quiser! Confiança total!",
-            "Quando estivermos velhinhos, ainda quero te amar como no primeiro dia.",
-            "Se precisar, faço igual Romeu e Julieta só para poder estar com você.",
-            "O amor que sinto é tão forte que nem o sol consegue competir.",
-            "Se tivesse que escolher entre respirar ou te amar, usaria meu último suspiro para dizer: EU TE AMO!"
-        ];
-        let paragraphIndex = 0;
-
-        function showParagraph(index) {
-            if (index >= paragraphs.length) {
-                document.getElementById('next-paragraph').classList.add('hidden');
-                return;
-            }
-            document.getElementById('message-text').textContent = paragraphs[index];
-        }
-
-        document.getElementById('next-paragraph').addEventListener('click', () => {
-            paragraphIndex++;
-            showParagraph(paragraphIndex);
-        });
-    </script>
+</script>
 
 </body>
 </html>
