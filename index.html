@@ -196,6 +196,7 @@ function playNextTrack() {
 
 audio.addEventListener('ended', playNextTrack);
 audio.src = playlist[currentTrack];
+            });
 
         // Start music when intro disappears
         setTimeout(() => {
