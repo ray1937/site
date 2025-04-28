@@ -1,3 +1,4 @@
+Você disse:
 <script type="text/javascript">
         var gk_isXlsx = false;
         var gk_xlsxFileLookup = {};
@@ -186,20 +187,15 @@
         // Music playback control
         const audio = document.getElementById('background-music');
         const playlist = [
-            'musicas/musica1.mp3',
-            'musicas/musica2.mp3',
-            'musicas/musica3.mp3'
+            'path/to/until_i_found_you.mp3',
+            'path/to/love_story_indila.mp3',
+            'path/to/te_amo_disgraca_baco.mp3'
         ];
         let currentTrack = 0;
-
-            audio.src = playlist[currentTrack];
-            audio.load();
-            audio.play();
 
         audio.addEventListener('ended', () => {
             currentTrack = (currentTrack + 1) % playlist.length;
             audio.src = playlist[currentTrack];
-            audio.load();
             audio.play();
         });
 
@@ -218,11 +214,11 @@
                 const heart = document.createElement('div');
                 heart.className = 'heart';
                 const initial = Math.random() > 0.5 ? 'G' : 'M';
-                heart.innerHTML = `<span>${initial}</span>`;
+                heart.innerHTML = <span>${initial}</span>;
                 // Randomize left position across full viewport width
-                heart.style.left = `${Math.random() * window.innerWidth}px`;
-                heart.style.animationDuration = `${5 + Math.random() * 3}s`; // Vary fall speed
-                heart.style.animationDelay = `${Math.random() * 2}s`; // Stagger start times
+                heart.style.left = ${Math.random() * window.innerWidth}px;
+                heart.style.animationDuration = ${5 + Math.random() * 3}s; // Vary fall speed
+                heart.style.animationDelay = ${Math.random() * 2}s; // Stagger start times
                 heartsContainer.appendChild(heart);
                 // Remove heart after animation to prevent DOM clutter
                 setTimeout(() => heart.remove(), 8000);
@@ -289,8 +285,8 @@
             const maxX = window.innerWidth - noBtn.offsetWidth;
             const maxY = window.innerHeight - noBtn.offsetHeight;
             noBtn.style.position = 'absolute';
-            noBtn.style.left = `${Math.random() * maxX}px`;
-            noBtn.style.top = `${Math.random() * maxY}px`;
+            noBtn.style.left = ${Math.random() * maxX}px;
+            noBtn.style.top = ${Math.random() * maxY}px;
         });
 
         // Final message paragraphs
@@ -325,4 +321,4 @@
 </body>
 </html>t>
 </body>
-</html>
+</html
