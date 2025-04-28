@@ -1,0 +1,323 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feliz 3 Meses, Meu Amor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0.5;
+            }
+        }
+        .heart {
+            position: absolute;
+            font-size: 24px;
+            color: white;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            animation: fall 6s linear infinite;
+            pointer-events: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            left: 0; /* Ensure no default centering */
+        }
+        .heart::before {
+            content: '♥';
+            position: absolute;
+            font-size: 40px;
+            color: red;
+            z-index: 1;
+        }
+        .heart span {
+            position: relative;
+            z-index: 2;
+            font-size: 20px;
+            color: white;
+        }
+        .ring {
+            width: 300px;
+            height: 300px;
+            border: 10px solid silver;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #f3f4f6, #e5e7eb);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        .ring-text {
+            width: 80%;
+            height: 80%;
+            overflow-y: auto;
+            padding: 10px;
+            font-size: 14px;
+            color: #1f2937;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="bg-black min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Audio Player -->
+    <audio id="background-music" autoplay loop hidden>
+        <source src="musicas/musica1.mp3" type="audio/mpeg">
+        <source src="musicas/musica2.mp3" type="audio/mpeg">
+        <source src="musicas/musica3.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Initial Message -->
+    <div id="intro" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+        <p class="text-white text-2xl md:text-4xl text-center p-4 animate-pulse">
+            Site feito por Gustavo Henrique, isso mesmo eu mesmo, esse retardado que vc namora é capaz de programar um site inteiro enquanto vc dorme
+        </p>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main" class="hidden relative w-full h-screen flex items-center justify-center">
+        <!-- Hearts Background -->
+        <div id="hearts"></div>
+
+        <!-- Form Section -->
+        <div id="form-section" class="bg-white p-6 rounded-lg shadow-lg z-10 max-w-md w-full">
+            <h2 class="text-2xl font-bold mb-4 text-center">Responda algumas perguntinhas, meu amor!</h2>
+            <form id="info-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium">Nome completo</label>
+                    <input type="text" name="name" required class="w-full p-2 border rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Idade</label>
+                    <input type="number" name="age" required class="w-full p-2 border rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Data de nascimento</label>
+                    <input type="date" name="dob" required class="w-full p-2 border rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Comida favorita</label>
+                    <input type="text" name="food" required class="w-full p-2 border rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Filme favorito</label>
+                    <input type="text" name="movie" required class="w-full p-2 border rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Seu nível de beleza</label>
+                    <input type="number" name="beauty" id="beauty-input" required class="w-full p-2 border rounded">
+                    <p id="beauty-error" class="text-red-500 text-sm hidden">Errou uma pergunta</p>
+                </div>
+                <button type="submit" class="w-full bg-pink-500 text-white p-2 rounded hover:bg-pink-600">Confirmar</button>
+            </form>
+        </div>
+
+        <!-- Basic Questions Section -->
+        <div id="basic-questions" class="hidden text-white text-3xl font-bold text-center z-10">
+            Algumas perguntinhas bem básicas
+        </div>
+
+        <!-- Yes/No Questions Section -->
+        <div id="yes-no-section" class="hidden flex flex-col items-center justify-center z-10">
+            <p id="question" class="text-white text-2xl md:text-3xl font-bold text-center mb-8"></p>
+            <div class="flex space-x-4">
+                <button id="yes-btn" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">Sim</button>
+                <button id="no-btn" class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600">Não</button>
+            </div>
+        </div>
+
+        <!-- Final Message Section -->
+        <div id="final" class="hidden flex flex-col items-center justify-center z-10">
+            <div class="ring">
+                <div id="message-text" class="ring-text"></div>
+            </div>
+            <button id="next-paragraph" class="mt-4 bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">➡️</button>
+        </div>
+    </div>
+
+    <script>
+        // Music playback control
+        const audio = document.getElementById('background-music');
+        const playlist = [
+            'path/to/until_i_found_you.mp3',
+            'path/to/love_story_indila.mp3',
+            'path/to/te_amo_disgraca_baco.mp3'
+        ];
+        let currentTrack = 0;
+
+        audio.addEventListener('ended', () => {
+            currentTrack = (currentTrack + 1) % playlist.length;
+            audio.src = playlist[currentTrack];
+            audio.play();
+        });
+
+        // Start music when intro disappears
+        setTimeout(() => {
+            document.getElementById('intro').classList.add('hidden');
+            document.getElementById('main').classList.remove('hidden');
+            audio.play();
+            createHearts();
+        }, 5000);
+
+        // Create cascading hearts with initials
+        function createHearts() {
+            const heartsContainer = document.getElementById('hearts');
+            function addHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                const initial = Math.random() > 0.5 ? 'G' : 'M';
+                heart.innerHTML = `<span>${initial}</span>`;
+                // Randomize left position across full viewport width
+                heart.style.left = `${Math.random() * window.innerWidth}px`;
+                heart.style.animationDuration = `${5 + Math.random() * 3}s`; // Vary fall speed
+                heart.style.animationDelay = `${Math.random() * 2}s`; // Stagger start times
+                heartsContainer.appendChild(heart);
+                // Remove heart after animation to prevent DOM clutter
+                setTimeout(() => heart.remove(), 8000);
+            }
+            // Add hearts every 500ms
+            setInterval(addHeart, 500);
+        }
+
+        // Form validation for beauty level
+        const form = document.getElementById('info-form');
+        const beautyInput = document.getElementById('beauty-input');
+        const beautyError = document.getElementById('beauty-error');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const beautyValue = parseInt(beautyInput.value);
+            if (beautyValue < 9999999999999999999) {
+                beautyError.classList.remove('hidden');
+                beautyInput.value = '9999999999999999999';
+                setTimeout(() => {
+                    beautyError.classList.add('hidden');
+                    beautyInput.value = '9999999999999999999';
+                }, 2000);
+            } else {
+                document.getElementById('form-section').classList.add('hidden');
+                document.getElementById('basic-questions').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('basic-questions').classList.add('hidden');
+                    document.getElementById('yes-no-section').classList.remove('hidden');
+                    showQuestion(0);
+                }, 3000);
+            }
+        });
+
+        // Yes/No questions
+        const questions = [
+            "Você vai se casar comigo?",
+            "Quando estivermos juntos vai rolar cuzinho?",
+            "Aceita ter pelo menos um filho(a) comigo?",
+            "Aceita fazer noites divertidas de jogos ou filmes comigo?",
+            "Aceita rir por besteiras quando estivermos olhando pro teto deitados e abraçados na cama?",
+            "Aceita ir num rodízio de pudim comigo?",
+            "Aceita ser minha parceira pela eternidade para que nem a morte nos separe?"
+        ];
+        let currentQuestion = 0;
+
+        function showQuestion(index) {
+            if (index >= questions.length) {
+                document.getElementById('yes-no-section').classList.add('hidden');
+                document.getElementById('final').classList.remove('hidden');
+                showParagraph(0);
+                return;
+            }
+            document.getElementById('question').textContent = questions[index];
+        }
+
+        document.getElementById('yes-btn').addEventListener('click', () => {
+            currentQuestion++;
+            showQuestion(currentQuestion);
+        });
+
+        const noBtn = document.getElementById('no-btn');
+        noBtn.addEventListener('mouseover', () => {
+            const maxX = window.innerWidth - noBtn.offsetWidth;
+            const maxY = window.innerHeight - noBtn.offsetHeight;
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = `${Math.random() * maxX}px`;
+            noBtn.style.top = `${Math.random() * maxY}px`;
+        });
+
+        // Final message paragraphs
+        const paragraphs = [
+            "Oioi meu amor, feliz 3 meses, como se sente sabendo que já se passou esse tempo? Esse tempo, sabe o que eu percebí com esses 3 meses de namoro? Bom, a primeira coisa foi ter notado que eu tenho mais ciúmes do que eu pensava ter KKKKKKK mas isso faz parte, a segunda é que não importa quantos dias passem e o quanto as coisas apertem, eu sempre irei continuar amando vc mais e mais, ao olhar seus olhos lindos na call percebo a janela para sua alma, e sabe o que essa janela me mostra? Uma pessoa brilhante, uma pessoa cheia de energia e determinação.",
+            "E isso é o que mais amo em vc, que vc tenta se esforçar e é determinada às coisas. Quando acontece algo ruim vc sempre consegue se reconstituir, e embora algumas vezes fique meio diferente, sigo sempre te amando. As vezes tudo o que eu quero é poder te abraçar pq pqp, seu abraço deve ser o mais quentinho, o mais confortável, o mais TUDO DE BOM desse mundo.",
+            "Quando te conhecí naquele grupo, nunca imaginei que hoje estaríamos aqui tão longe e juntos. Você nunca sai da minha cabeça e estou sempre pensando em você, em como está e quando você some eu me preocupo bastante, pq pode estar acontecendo qualquer coisa na sua vida, e eu quero sempre ajudar sabe? Eu quero poder ser a pessoa em quem vc mais confia e quero ser quem vc vai ver como porto seguro.",
+            "O jeito em como vc se veste, o jeito em como vc conversa, o jeito em como você canta, me encanta muito, cada detalhe de cada uma dessas coisas citadas continua sempre a me encantar mais e mais. Sua beleza é inacabável, um verdadeiro esplendor. Seu sorriso sempre anima meus dias, mesmo que aquele esteja sendo um dia batido pra caralho, seu sorriso sempre levanta meu astral. É só o sorriso mais lindo que eu já vi em toda a terra e sempre me tira sorrisos bobos quando vejo ele.",
+            "Seu cabelo é muito lindo, e com toda certeza ele é muito bem cuidado e deve cheirar muito bem, me aguarde para que eu possa fazer diversos cafunés nele, para que eu possa por minha mão na sua cabeça quando estiver deitada e sentir a maciez do seu cabelo. E pensa que acabou? Eu penso em você todas as manhãs, vc n tem noção do quanto vc me motiva, me traz bons pensamentos e positividade pela manhã.",
+            "Uma curiosidade fascinante, sabia que o anel é redondo? Mas calma, isso não é uma pergunta idiota, bom, ninguém vê ele dessa forma porém na minha cabeça, criei a teoria de que o anel é nesse formato porque o círculo faz uma volta de 360⁰ e se ele faz uma volta de 360⁰ quer dizer que ele não termina ou seja ele é infinito. E sabe o que eu irei colocar com todo meu amor e carinho no seu dedo? Exatamente um anel, que na sua mais pura essência simboliza meu amor e meu respeito infinito por você.",
+            "Sei que no futuro olharemos para trás e nos recordaremos de todas as promessas já feitas em nossa relação, e vamos olhar com carinho tudo isso enquanto nós nos beijamos lentamente em um campo em uma noite fria, logo após eu ter lhe perguntado 'Marianny você aceita se casar comigo?' Desejo que essa nossa união nos permita continuar compartilhando desejos e sonhos e permita que nós tenhamos muita saúde em nossa relação.",
+            "Não vamos deixar com que brigas, stress ou tentações estraguem nosso relacionamento. Vamos nos manter sempre firmes quanto a isso, E OLHA VC PODE PEDIR PRA OLHAR MEU CELULAR TÁ? NÃO SÓ EU POSSO PEDIR PRA OLHAR O SEU, SÉRIO. E olha, quando estivermos velhos, quase com o pé na cova, espero que nosso último café da manhã, seja a coisa mais iluminada de todas, para que eu possa partir em paz.",
+            "E sim eu morrerei antes de vc pq acho que se vc morrer antes eu morro junto de coração partido (sim é possível). E assim, nenhum escritor jamais diria ou chegaria perto do quanto amo você. Mas sinceramente eu faria o mesmo que Romeu fez pela Julieta se no final fosse para estar junto de você. Faria o mesmo que qualquer livro de romance descreve em suas folhas. Seja isso um jantar a luz de velas ou algo muito mais extremo.",
+            "Portanto que no final eu veja seu sorriso, tudo vale a pena. Sol e lua? Ahn? Pelo amor de Deus, que amor pequeno, comparado ao que sinto por você, sério nem chega perto. Posso não ter sido seu primeiro, mas espero poder ser seu último. Vc me mostrou que o amor é feito de altos e baixos, escolhas e promessas, risos e choro, mas mesmo com tudo isso, você me deu um novo jeito de pensar na palavra 'amor' um jeito um bilhão de vezes mais intenso e mais belo do que eu pensava conhecer.",
+            "E sinceramente, se o sol escutasse meus pensamentos, com toda certeza se apaixonaria por vc tbm, e ele iria misteriosamente desaparecer no próximo dia 😅. Vc é tão pura quanto uma nota musical e tão doce quanto uma melodia, você é a música que toca em minha mente, desde quando te conhecí. Vc simplesmente é a flor mais bela do meu jardim, a flor na qual quero regar todos os dias e preservar e poder contar a todos que é meu maior tesouro.",
+            "E essa é uma frase clichê que eu vi no TikTok, mas se eu tivesse que escolher entre respirar ou te amar, eu com toda certeza usaria meu último suspiro para dizer que eu te amo. E eu posso te garantir que aquele bagulho de 'até depois da morte te amarei' será real, até pq mesmo com minha alma morta, ela continuará viva pelo seu amor."
+        ];
+        let currentParagraph = 0;
+
+        function showParagraph(index) {
+            document.getElementById('message-text').textContent = paragraphs[index];
+            document.getElementById('next-paragraph').disabled = index === paragraphs.length - 1;
+        }
+
+        document.getElementById('next-paragraph').addEventListener('click', () => {
+            if (currentParagraph < paragraphs.length - 1) {
+                currentParagraph++;
+                showParagraph(currentParagraph);
+            }
+        });
+    </script>
+</body>
+</html>t>
+</body>
+</html>
