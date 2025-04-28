@@ -137,6 +137,16 @@
             </div>
         </div>
 
+        <!-- Confirmation Question Section -->
+        <div id="confirmation-section" class="hidden flex flex-col items-center justify-center z-10">
+            <p id="confirmation-question" class="text-white text-2xl md:text-3xl font-bold text-center mb-8">Tudo sim? Até o cuzinho? Tem certeza?</p>
+            <p id="error-message" class="text-red-500 text-xl font-bold mb-4 hidden">Resposta errada</p>
+            <div id="confirmation-buttons" class="flex space-x-4">
+                <button id="confirm-yes-btn" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">Sim</button>
+                <button id="confirm-no-btn" class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600">Não</button>
+            </div>
+        </div>
+
         <!-- Final Message Section -->
         <div id="final" class="hidden flex flex-col items-center justify-center z-10">
             <div class="ring">
@@ -189,7 +199,6 @@
         let currentTrack = 0;
         let isPlaying = false;
 
-        // Log para confirmar que o botão foi encontrado
         if (playPauseBtn) {
             console.log('Botão de play/pausa encontrado no DOM');
         } else {
@@ -202,11 +211,10 @@
                 playPauseBtn.textContent = '▶';
                 isPlaying = false;
             } else {
-                audio.muted = false; // Desmuta o áudio
+                audio.muted = false;
                 audio.play().then(() => {
                     playPauseBtn.textContent = '❚❚';
                     isPlaying = true;
-                    // Transição para a próxima página apenas quando o play é iniciado
                     document.getElementById('intro').classList.add('hidden');
                     document.getElementById('main').classList.remove('hidden');
                     createHearts();
@@ -216,10 +224,8 @@
             }
         }
 
-        // Event listener para o botão de play/pause
         playPauseBtn.addEventListener('click', togglePlayPause);
 
-        // Troca de faixas
         audio.addEventListener('ended', () => {
             currentTrack = (currentTrack + 1) % playlist.length;
             audio.src = playlist[currentTrack];
@@ -232,7 +238,6 @@
             });
         });
 
-        // Tratamento de erro
         audio.addEventListener('error', () => {
             console.error('Erro ao carregar áudio');
             currentTrack = (currentTrack + 1) % playlist.length;
@@ -246,7 +251,6 @@
             });
         });
 
-        // Create cascading hearts with initials
         function createHearts() {
             const heartsContainer = document.getElementById('hearts');
             function addHeart() {
@@ -263,7 +267,6 @@
             setInterval(addHeart, 500);
         }
 
-        // Form validation for beauty level
         const form = document.getElementById('info-form');
         const beautyInput = document.getElementById('beauty-input');
         const beautyError = document.getElementById('beauty-error');
@@ -289,7 +292,6 @@
             }
         });
 
-        // Yes/No questions
         const questions = [
             "Você vai se casar comigo?",
             "Quando estivermos juntos vai rolar cuzinho?",
@@ -304,8 +306,10 @@
         function showQuestion(index) {
             if (index >= questions.length) {
                 document.getElementById('yes-no-section').classList.add('hidden');
-                document.getElementById('final').classList.remove('hidden');
-                showParagraph(0);
+                document.getElementById('confirmation-section').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('confirmation-question').classList.add('hidden');
+                }, 5000);
                 return;
             }
             document.getElementById('question').textContent = questions[index];
@@ -325,7 +329,35 @@
             noBtn.style.top = `${Math.random() * maxY}px`;
         });
 
-        // Final message paragraphs
+        // Confirmation section logic
+        const confirmYesBtn = document.getElementById('confirm-yes-btn');
+        const confirmNoBtn = document.getElementById('confirm-no-btn');
+        const errorMessage = document.getElementById('error-message');
+        const confirmationButtons = document.getElementById('confirmation-buttons');
+
+        confirmNoBtn.addEventListener('click', () => {
+            confirmNoBtn.classList.add('hidden');
+            errorMessage.classList.remove('hidden');
+            const newYesBtn = document.createElement('button');
+            newYesBtn.className = 'bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600';
+            newYesBtn.textContent = 'Sim';
+            newYesBtn.addEventListener('click', () => {
+                document.getElementById('confirmation-section').classList.add('hidden');
+                document.getElementById('final').classList.remove('hidden');
+                showParagraph(0);
+            });
+            confirmationButtons.appendChild(newYesBtn);
+            setTimeout(() => {
+                errorMessage.classList.add('hidden');
+            }, 2000);
+        });
+
+        confirmYesBtn.addEventListener('click', () => {
+            document.getElementById('confirmation-section').classList.add('hidden');
+            document.getElementById('final').classList.remove('hidden');
+            showParagraph(0);
+        });
+
         const paragraphs = [
             "Oioi meu amor, feliz 3 meses, como se sente sabendo que já se passou esse tempo? Esse tempo, sabe o que eu percebí com esses 3 meses de namoro? Bom, a primeira coisa foi ter notado que eu tenho mais ciúmes do que eu pensava ter KKKKKKK mas isso faz parte, a segunda é que não importa quantos dias passem e o quanto as coisas apertem, eu sempre irei continuar amando vc mais e mais, ao olhar seus olhos lindos na call percebo a janela para sua alma, e sabe o que essa janela me mostra? Uma pessoa brilhante, uma pessoa cheia de energia e determinação.",
             "E isso é o que mais amo em vc, que vc tenta se esforçar e é determinada às coisas. Quando acontece algo ruim vc sempre consegue se reconstituir, e embora algumas vezes fique meio diferente, sigo sempre te amando. As vezes tudo o que eu quero é poder te abraçar pq pqp, seu abraço deve ser o mais quentinho, o mais confortável, o mais TUDO DE BOM desse mundo.",
@@ -338,7 +370,7 @@
             "E sim eu morrerei antes de vc pq acho que se vc morrer antes eu morro junto de coração partido (sim é possível). E assim, nenhum escritor jamais diria ou chegaria perto do quanto amo você. Mas sinceramente eu faria o mesmo que Romeu fez pela Julieta se no final fosse para estar junto de você. Faria o mesmo que qualquer livro de romance descreve em suas folhas. Seja isso um jantar a luz de velas ou algo muito mais extremo.",
             "Portanto que no final eu veja seu sorriso, tudo vale a pena. Sol e lua? Ahn? Pelo amor de Deus, que amor pequeno, comparado ao que sinto por você, sério nem chega perto. Posso não ter sido seu primeiro, mas espero poder ser seu último. Vc me mostrou que o amor é feito de altos e baixos, escolhas e promessas, risos e choro, mas mesmo com tudo isso, você me deu um novo jeito de pensar na palavra 'amor' um jeito um bilhão de vezes mais intenso e mais belo do que eu pensava conhecer.",
             "E sinceramente, se o sol escutasse meus pensamentos, com toda certeza se apaixonaria por vc tbm, e ele iria misteriosamente desaparecer no próximo dia 😅. Vc é tão pura quanto uma nota musical e tão doce quanto uma melodia, você é a música que toca em minha mente, desde quando te conhecí. Vc simplesmente é a flor mais bela do meu jardim, a flor na qual quero regar todos os dias e preservar e poder contar a todos que é meu maior tesouro.",
-            "E essa é uma frase clichê que eu vi no TikTok, mas se eu tivesse que escolher entre respirar ou te amar, eu com toda certeza usaria meu último suspiro para dizer que eu te amo. E eu posso te garantir que aquele bagulho de 'até depois da morte te amarei' será real, até pq mesmo com minha alma morta, ela continuará viva pelo seu amor."
+            "E essa é uma frase clichê que eu vi no TikTok, but se eu tivesse que escolher entre respirar ou te amar, eu com toda certeza usaria meu último suspiro para dizer que eu te amo. E eu posso te garantir que aquele bagulho de 'até depois da morte te amarei' será real, até pq mesmo com minha alma morta, ela continuará viva pelo seu amor."
         ];
         let currentParagraph = 0;
 
