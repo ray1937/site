@@ -192,9 +192,14 @@
         ];
         let currentTrack = 0;
 
+            audio.src = playlist[currentTrack];
+            audio.load();
+            audio.play();
+
         audio.addEventListener('ended', () => {
             currentTrack = (currentTrack + 1) % playlist.length;
             audio.src = playlist[currentTrack];
+            audio.load();
             audio.play();
         });
 
