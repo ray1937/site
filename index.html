@@ -157,37 +157,6 @@
     </div>
 
     <script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-            if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-                try {
-                    var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                    var firstSheetName = workbook.SheetNames[0];
-                    var worksheet = workbook.Sheets[firstSheetName];
-                    var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                    var filteredData = jsonData.filter(row => row.some(filledCell));
-                    var headerRowIndex = filteredData.findIndex((row, index) =>
-                        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                    );
-                    if (headerRowIndex === -1 || headerRowIndex > 25) {
-                        headerRowIndex = 0;
-                    }
-                    var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
-                    csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                    return csv;
-                } catch (e) {
-                    console.error(e);
-                    return "";
-                }
-            }
-            return gk_fileData[filename] || "";
-        }
-
         // Music playback control
         const audio = document.getElementById('background-music');
         const playPauseBtn = document.getElementById('play-pause-btn');
@@ -199,6 +168,7 @@
         let currentTrack = 0;
         let isPlaying = false;
 
+        console.log('Inicializando script...');
         if (playPauseBtn) {
             console.log('Botão de play/pausa encontrado no DOM');
         } else {
@@ -206,13 +176,16 @@
         }
 
         function togglePlayPause() {
+            console.log('togglePlayPause chamado, isPlaying:', isPlaying);
             if (isPlaying) {
                 audio.pause();
                 playPauseBtn.textContent = '▶';
                 isPlaying = false;
             } else {
                 audio.muted = false;
+                audio.src = playlist[currentTrack];
                 audio.play().then(() => {
+                    console.log('Áudio reproduzindo:', playlist[currentTrack]);
                     playPauseBtn.textContent = '❚❚';
                     isPlaying = true;
                     document.getElementById('intro').classList.add('hidden');
@@ -227,31 +200,35 @@
         playPauseBtn.addEventListener('click', togglePlayPause);
 
         audio.addEventListener('ended', () => {
+            console.log('Áudio terminou, trocando faixa');
             currentTrack = (currentTrack + 1) % playlist.length;
             audio.src = playlist[currentTrack];
             audio.muted = false;
             audio.play().then(() => {
+                console.log('Próxima faixa reproduzindo:', playlist[currentTrack]);
                 playPauseBtn.textContent = '❚❚';
                 isPlaying = true;
             }).catch((error) => {
-                console.error('Erro ao reproduzir áudio:', error);
+                console.error('Erro ao reproduzir próxima faixa:', error);
             });
         });
 
         audio.addEventListener('error', () => {
-            console.error('Erro ao carregar áudio');
+            console.error('Erro ao carregar áudio:', playlist[currentTrack]);
             currentTrack = (currentTrack + 1) % playlist.length;
             audio.src = playlist[currentTrack];
             audio.muted = false;
             audio.play().then(() => {
+                console.log('Faixa alternativa reproduzindo:', playlist[currentTrack]);
                 playPauseBtn.textContent = '❚❚';
                 isPlaying = true;
             }).catch((error) => {
-                console.error('Erro ao reproduzir áudio:', error);
+                console.error('Erro ao reproduzir faixa alternativa:', error);
             });
         });
 
         function createHearts() {
+            console.log('Iniciando criação de corações');
             const heartsContainer = document.getElementById('hearts');
             function addHeart() {
                 const heart = document.createElement('div');
@@ -272,9 +249,11 @@
         const beautyError = document.getElementById('beauty-error');
 
         form.addEventListener('submit', (e) => {
+            console.log('Formulário submetido');
             e.preventDefault();
             const beautyValue = parseInt(beautyInput.value);
             if (beautyValue < 9999999999999999999) {
+                console.log('Erro: nível de beleza inválido');
                 beautyError.classList.remove('hidden');
                 beautyInput.value = '9999999999999999999';
                 setTimeout(() => {
@@ -282,9 +261,11 @@
                     beautyInput.value = '9999999999999999999';
                 }, 2000);
             } else {
+                console.log('Formulário válido, prosseguindo');
                 document.getElementById('form-section').classList.add('hidden');
                 document.getElementById('basic-questions').classList.remove('hidden');
                 setTimeout(() => {
+                    console.log('Exibindo perguntas Sim/Não');
                     document.getElementById('basic-questions').classList.add('hidden');
                     document.getElementById('yes-no-section').classList.remove('hidden');
                     showQuestion(0);
@@ -304,10 +285,13 @@
         let currentQuestion = 0;
 
         function showQuestion(index) {
+            console.log('showQuestion chamado, index:', index);
             if (index >= questions.length) {
+                console.log('Fim das perguntas, exibindo confirmação');
                 document.getElementById('yes-no-section').classList.add('hidden');
                 document.getElementById('confirmation-section').classList.remove('hidden');
                 setTimeout(() => {
+                    console.log('Escondendo mensagem de confirmação após 5s');
                     document.getElementById('confirmation-question').classList.add('hidden');
                 }, 5000);
                 return;
@@ -316,12 +300,14 @@
         }
 
         document.getElementById('yes-btn').addEventListener('click', () => {
+            console.log('Botão Sim clicado, pergunta:', currentQuestion);
             currentQuestion++;
             showQuestion(currentQuestion);
         });
 
         const noBtn = document.getElementById('no-btn');
         noBtn.addEventListener('mouseover', () => {
+            console.log('Mouse sobre o botão Não');
             const maxX = window.innerWidth - noBtn.offsetWidth;
             const maxY = window.innerHeight - noBtn.offsetHeight;
             noBtn.style.position = 'absolute';
@@ -335,31 +321,41 @@
         const errorMessage = document.getElementById('error-message');
         const confirmationButtons = document.getElementById('confirmation-buttons');
 
+        if (confirmYesBtn && confirmNoBtn) {
+            console.log('Botões de confirmação encontrados no DOM');
+        } else {
+            console.error('Erro: Botões de confirmação não encontrados');
+        }
+
+        confirmYesBtn.addEventListener('click', () => {
+            console.log('Botão Sim (confirmação) clicado');
+            document.getElementById('confirmation-section').classList.add('hidden');
+            document.getElementById('final').classList.remove('hidden');
+            showParagraph(0);
+        });
+
         confirmNoBtn.addEventListener('click', () => {
+            console.log('Botão Não (confirmação) clicado');
             confirmNoBtn.classList.add('hidden');
             errorMessage.classList.remove('hidden');
             const newYesBtn = document.createElement('button');
             newYesBtn.className = 'bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600';
             newYesBtn.textContent = 'Sim';
             newYesBtn.addEventListener('click', () => {
+                console.log('Novo botão Sim (confirmação) clicado');
                 document.getElementById('confirmation-section').classList.add('hidden');
                 document.getElementById('final').classList.remove('hidden');
                 showParagraph(0);
             });
             confirmationButtons.appendChild(newYesBtn);
             setTimeout(() => {
+                console.log('Escondendo mensagem de erro após 2s');
                 errorMessage.classList.add('hidden');
             }, 2000);
         });
 
-        confirmYesBtn.addEventListener('click', () => {
-            document.getElementById('confirmation-section').classList.add('hidden');
-            document.getElementById('final').classList.remove('hidden');
-            showParagraph(0);
-        });
-
         const paragraphs = [
-            "Oioi meu amor, feliz 3 meses, como se sente sabendo que já se passou esse tempo? Esse tempo, sabe o que eu percebí com esses 3 meses de namoro? Bom, a primeira coisa foi ter notado que eu tenho mais ciúmes do que eu pensava ter KKKKKKK mas isso faz parte, a segunda é que não importa quantos dias passem e o quanto as coisas apertem, eu sempre irei continuar amando vc mais e mais, ao olhar seus olhos lindos na call percebo a janela para sua alma, e sabe o que essa janela me mostra? Uma pessoa brilhante, uma pessoa cheia de energia e determinação.",
+            "Oioi meu amor, feliz 3 meses, como se sente sabendo que já se passou esse tempo? Esse tempo, sabe o que eu percebí com esses 3 meses de namoro? Bom, a primeira coisa foi ter notado que eu tenho mais ciúmes do que eu pensava ter KKKKKKK mas isso faz parte, a segunda é que não importa quantos diasවිලංකාරීන් ප්‍රදේශයේ ආයුර්වේද ඖෂධ බලපත්‍රලාභී ගුරුකම් පිළිබඳ පුහුණුව ලබා දීමටත්, ඒ සඳහා අවශ්‍ය උපකරණ, බුද්ධිමය හා තාක්ෂණික උපකරණ ලබා දීමටත් මුදල් වෙන් කරන ලදී. ශ්‍රී ලංකාවේ ආයුර්වේද ඖෂධ පිළිබඳ ගුරුකම් පුහුණුව ලබා දීම සඳහා 2018 වසරේ සිට මේ දක්වා රුපියල් මිලියන 2,500 ක් පමණ වැය කර ඇති බවත්, ඒ සඳහා ආයුර්වේද ඖෂධ පිළිබඳ ගුරුකම් පුහුණුව ලබා දීමට අවශ්‍ය උපකරණ, බුද්ධිමය හා තාක්ෂණික උපකරණ ලබා දීමට රුපියල් මිලියන 1,500 ක් පමණ වැය කර ඇති බවත් රජය පවසයි. ශ්‍රී ලංකාවේ ආයුර්වේද ඖෂධ පිළිබඳ ගුරුකම් පුහුණුව ලබා දීම සඳහා 2018 වසරේ සිට මේ දක්වා රුපියල් මිලියන 2,500 ක් පමණ වැය කර ඇති බවත්, ඒ සඳහා ආයුර්වේද ඖෂධ පිළිබඳ ගුරුකම් පුහුණුව ලබා දීමට අවශ්‍ය උපකරණ, බුද්ධිමය හා තාක්ෂණික උපකරණ ලබා දීමට රුපියල් මිලියන 1,500 ක් පමණ වැය කර ඇති බවත් රජය පවසයි. ශ්‍රී ලංකාවේ ආයුර්වේද ඖෂධ පිළිබඳ ගුරුකම් පුහුණුව ලබා දීම සඳහා 2018 වසරේ සිට මේ දක්වා රුපියල් මිලියන 2,500 ක් පමණ වැය කර ඇති බවත්, ඒ සඳහා ආයුර්වේද ඖෂධ පිළිබඳ ගුරුකම් පුහුණුව ලබා දීමට අවශ්‍ය උපකරණ, බුද්ධිමය හා තාක්ෂණික උපකරණ ලබා දීමට රුපියල් මිලියන 1,500 ක් පමණ වැය කර ඇති බවත් රජය පවසයි.
             "E isso é o que mais amo em vc, que vc tenta se esforçar e é determinada às coisas. Quando acontece algo ruim vc sempre consegue se reconstituir, e embora algumas vezes fique meio diferente, sigo sempre te amando. As vezes tudo o que eu quero é poder te abraçar pq pqp, seu abraço deve ser o mais quentinho, o mais confortável, o mais TUDO DE BOM desse mundo.",
             "Quando te conhecí naquele grupo, nunca imaginei que hoje estaríamos aqui tão longe e juntos. Você nunca sai da minha cabeça e estou sempre pensando em você, em como está e quando você some eu me preocupo bastante, pq pode estar acontecendo qualquer coisa na sua vida, e eu quero sempre ajudar sabe? Eu quero poder ser a pessoa em quem vc mais confia e quero ser quem vc vai ver como porto seguro.",
             "O jeito em como vc se veste, o jeito em como vc conversa, o jeito em como você canta, me encanta muito, cada detalhe de cada uma dessas coisas citadas continua sempre a me encantar mais e mais. Sua beleza é inacabável, um verdadeiro esplendor. Seu sorriso sempre anima meus dias, mesmo que aquele esteja sendo um dia batido pra caralho, seu sorriso sempre levanta meu astral. É só o sorriso mais lindo que eu já vi em toda a terra e sempre me tira sorrisos bobos quando vejo ele.",
@@ -370,16 +366,18 @@
             "E sim eu morrerei antes de vc pq acho que se vc morrer antes eu morro junto de coração partido (sim é possível). E assim, nenhum escritor jamais diria ou chegaria perto do quanto amo você. Mas sinceramente eu faria o mesmo que Romeu fez pela Julieta se no final fosse para estar junto de você. Faria o mesmo que qualquer livro de romance descreve em suas folhas. Seja isso um jantar a luz de velas ou algo muito mais extremo.",
             "Portanto que no final eu veja seu sorriso, tudo vale a pena. Sol e lua? Ahn? Pelo amor de Deus, que amor pequeno, comparado ao que sinto por você, sério nem chega perto. Posso não ter sido seu primeiro, mas espero poder ser seu último. Vc me mostrou que o amor é feito de altos e baixos, escolhas e promessas, risos e choro, mas mesmo com tudo isso, você me deu um novo jeito de pensar na palavra 'amor' um jeito um bilhão de vezes mais intenso e mais belo do que eu pensava conhecer.",
             "E sinceramente, se o sol escutasse meus pensamentos, com toda certeza se apaixonaria por vc tbm, e ele iria misteriosamente desaparecer no próximo dia 😅. Vc é tão pura quanto uma nota musical e tão doce quanto uma melodia, você é a música que toca em minha mente, desde quando te conhecí. Vc simplesmente é a flor mais bela do meu jardim, a flor na qual quero regar todos os dias e preservar e poder contar a todos que é meu maior tesouro.",
-            "E essa é uma frase clichê que eu vi no TikTok, but se eu tivesse que escolher entre respirar ou te amar, eu com toda certeza usaria meu último suspiro para dizer que eu te amo. E eu posso te garantir que aquele bagulho de 'até depois da morte te amarei' será real, até pq mesmo com minha alma morta, ela continuará viva pelo seu amor."
+            "E essa é uma frase clichê que eu vi no TikTok, mas se eu tivesse que escolher entre respirar ou te amar, eu com toda certeza usaria meu último suspiro para dizer que eu te amo. E eu posso te garantir que aquele bagulho de 'até depois da morte te amarei' será real, até pq mesmo com minha alma morta, ela continuará viva pelo seu amor."
         ];
         let currentParagraph = 0;
 
         function showParagraph(index) {
+            console.log('Exibindo parágrafo:', index);
             document.getElementById('message-text').textContent = paragraphs[index];
             document.getElementById('next-paragraph').disabled = index === paragraphs.length - 1;
         }
 
         document.getElementById('next-paragraph').addEventListener('click', () => {
+            console.log('Botão Próximo parágrafo clicado');
             if (currentParagraph < paragraphs.length - 1) {
                 currentParagraph++;
                 showParagraph(currentParagraph);
