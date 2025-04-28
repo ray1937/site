@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MultiEtapas</title>
+    <title>MultiEtapas com Música</title>
     <style>
-        /* Estilos CSS */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -39,9 +38,16 @@
         button:hover {
             background-color: #45a049;
         }
+        #music-controls {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
+
+<div id="music-controls">
+    <button id="playPauseBtn" onclick="toggleMusic()">Tocar Música</button>
+</div>
 
 <audio id="background-music" loop>
     <source src="musicas/musica1.mp3" type="audio/mp3">
@@ -76,15 +82,14 @@
 </div>
 
 <script>
-    // Variável para controlar a etapa atual
     let currentStep = 1;
+    const audio = document.getElementById('background-music');
+    const playPauseBtn = document.getElementById('playPauseBtn');
 
     function showStep(step) {
-        // Esconde todas as etapas
         document.querySelectorAll('.step').forEach(function (el) {
             el.classList.remove('active');
         });
-        // Mostra apenas a etapa atual
         document.getElementById('step' + step).classList.add('active');
     }
 
@@ -106,16 +111,18 @@
         alert('Finalizado!');
     }
 
-    // Correção: tocar música só após clique
-    document.addEventListener('click', () => {
-        const audio = document.getElementById('background-music');
+    function toggleMusic() {
         if (audio.paused) {
-            audio.play().catch(error => {
+            audio.play().then(() => {
+                playPauseBtn.textContent = 'Pausar Música';
+            }).catch(error => {
                 console.log('Erro ao tentar tocar música:', error);
             });
+        } else {
+            audio.pause();
+            playPauseBtn.textContent = 'Tocar Música';
         }
-    }, { once: true });
-
+    }
 </script>
 
 </body>
