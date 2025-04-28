@@ -92,7 +92,9 @@
 
         <!-- Form Section -->
         <div id="form-section" class="bg-white p-6 rounded-lg shadow-lg z-10 max-w-md w-full">
-            <h2 class="text-2xl font-bold mb-4 text-center">Responda algumas perguntinhas, meu amor!</h2>
+            <h2 class="text-2xl font-bold
+
+ mb-4 text-center">Responda algumas perguntinhas, meu amor!</h2>
             <form id="info-form" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium">Nome completo</label>
@@ -285,35 +287,61 @@
         let currentQuestion = 0;
 
         function showQuestion(index) {
-            console.log('showQuestion chamado, index:', index);
+            console.log('showQuestion chamado, index:', index, 'questions.length:', questions.length);
             if (index >= questions.length) {
                 console.log('Fim das perguntas, exibindo confirmação');
                 document.getElementById('yes-no-section').classList.add('hidden');
-                document.getElementById('confirmation-section').classList.remove('hidden');
-                setTimeout(() => {
-                    console.log('Escondendo mensagem de confirmação após 5s');
-                    document.getElementById('confirmation-question').classList.add('hidden');
-                }, 5000);
+                const confirmationSection = document.getElementById('confirmation-section');
+                if (confirmationSection) {
+                    confirmationSection.classList.remove('hidden');
+                    console.log('confirmation-section exibida');
+                    setTimeout(() => {
+                        console.log('Escondendo mensagem de confirmação após 5s');
+                        const confirmationQuestion = document.getElementById('confirmation-question');
+                        if (confirmationQuestion) {
+                            confirmationQuestion.classList.add('hidden');
+                        } else {
+                            console.error('Elemento confirmation-question não encontrado');
+                        }
+                    }, 5000);
+                } else {
+                    console.error('Elemento confirmation-section não encontrado');
+                }
                 return;
             }
-            document.getElementById('question').textContent = questions[index];
+            const questionElement = document.getElementById('question');
+            if (questionElement) {
+                questionElement.textContent = questions[index];
+                console.log('Pergunta exibida:', questions[index]);
+            } else {
+                console.error('Elemento question não encontrado');
+            }
         }
 
-        document.getElementById('yes-btn').addEventListener('click', () => {
-            console.log('Botão Sim clicado, pergunta:', currentQuestion);
-            currentQuestion++;
-            showQuestion(currentQuestion);
-        });
+        const yesBtn = document.getElementById('yes-btn');
+        if (yesBtn) {
+            yesBtn.addEventListener('click', () => {
+                console.log('Botão Sim clicado, pergunta:', currentQuestion);
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            });
+        } else {
+            console.error('Botão yes-btn não encontrado');
+        }
 
         const noBtn = document.getElementById('no-btn');
-        noBtn.addEventListener('mouseover', () => {
-            console.log('Mouse sobre o botão Não');
-            const maxX = window.innerWidth - noBtn.offsetWidth;
-            const maxY = window.innerHeight - noBtn.offsetHeight;
-            noBtn.style.position = 'absolute';
-            noBtn.style.left = `${Math.random() * maxX}px`;
-            noBtn.style.top = `${Math.random() * maxY}px`;
-        });
+        if (noBtn) {
+            noBtn.addEventListener('mouseover', () => {
+                console.log('Mouse sobre o botão Não');
+                const maxX = window.innerWidth - noBtn.offsetWidth;
+                const maxY = window.innerHeight - noBtn.offsetHeight;
+                noBtn.style.position = 'absolute';
+                noBtn.style.left = `${Math.random() * maxX}px`;
+                noBtn.style.top = `${Math.random() * maxY}px`;
+            });
+        } else {
+            console.error('Botão no-btn não encontrado');
+        }
 
         // Confirmation section logic
         const confirmYesBtn = document.getElementById('confirm-yes-btn');
@@ -321,41 +349,45 @@
         const errorMessage = document.getElementById('error-message');
         const confirmationButtons = document.getElementById('confirmation-buttons');
 
-        if (confirmYesBtn && confirmNoBtn) {
-            console.log('Botões de confirmação encontrados no DOM');
-        } else {
-            console.error('Erro: Botões de confirmação não encontrados');
-        }
-
-        confirmYesBtn.addEventListener('click', () => {
-            console.log('Botão Sim (confirmação) clicado');
-            document.getElementById('confirmation-section').classList.add('hidden');
-            document.getElementById('final').classList.remove('hidden');
-            showParagraph(0);
-        });
-
-        confirmNoBtn.addEventListener('click', () => {
-            console.log('Botão Não (confirmação) clicado');
-            confirmNoBtn.classList.add('hidden');
-            errorMessage.classList.remove('hidden');
-            const newYesBtn = document.createElement('button');
-            newYesBtn.className = 'bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600';
-            newYesBtn.textContent = 'Sim';
-            newYesBtn.addEventListener('click', () => {
-                console.log('Novo botão Sim (confirmação) clicado');
+        if (confirmYesBtn && confirmNoBtn && errorMessage && confirmationButtons) {
+            console.log('Botões de confirmação e elementos relacionados encontrados no DOM');
+            confirmYesBtn.addEventListener('click', () => {
+                console.log('Botão Sim (confirmação) clicado');
                 document.getElementById('confirmation-section').classList.add('hidden');
                 document.getElementById('final').classList.remove('hidden');
                 showParagraph(0);
             });
-            confirmationButtons.appendChild(newYesBtn);
-            setTimeout(() => {
-                console.log('Escondendo mensagem de erro após 2s');
-                errorMessage.classList.add('hidden');
-            }, 2000);
-        });
+
+            confirmNoBtn.addEventListener('click', () => {
+                console.log('Botão Não (confirmação) clicado');
+                confirmNoBtn.classList.add('hidden');
+                errorMessage.classList.remove('hidden');
+                const newYesBtn = document.createElement('button');
+                newYesBtn.className = 'bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600';
+                newYesBtn.textContent = 'Sim';
+                newYesBtn.addEventListener('click', () => {
+                    console.log('Novo botão Sim (confirmação) clicado');
+                    document.getElementById('confirmation-section').classList.add('hidden');
+                    document.getElementById('final').classList.remove('hidden');
+                    showParagraph(0);
+                });
+                confirmationButtons.appendChild(newYesBtn);
+                setTimeout(() => {
+                    console.log('Escondendo mensagem de erro após 2s');
+                    errorMessage.classList.add('hidden');
+                }, 2000);
+            });
+        } else {
+            console.error('Erro: Um ou mais elementos de confirmação não encontrados', {
+                confirmYesBtn: !!confirmYesBtn,
+                confirmNoBtn: !!confirmNoBtn,
+                errorMessage: !!errorMessage,
+                confirmationButtons: !!confirmationButtons
+            });
+        }
 
         const paragraphs = [
-            "Oioi meu amor, feliz 3 meses, como se sente sabendo que já se passou esse tempo? Esse tempo, sabe o que eu percebí com esses 3 meses de namoro? Bom, a primeira coisa foi ter notado que eu tenho mais ciúmes do que eu pensava ter KKKKKKK mas isso faz parte, a segunda é que não importa quantos diasවිලංකාරීන් ප්‍රදේශයේ ආයුර්වේද ඖෂධ බලපත්‍රලාභී ගුරුකම් පිළිබඳ පුහුණුව ලබා දීමටත්, ඒ සඳහා අවශ්‍ය උපකරණ, බුද්ධිමය හා තාක්ෂණික උපකරණ ලබා දීමටත් මුදල් වෙන් කරන ලදී. ශ්‍රී ලංකාවේ ආයුර්වේද ඖෂධ පිළිබඳ ගුරුකම් පුහුණුව ලබා දීම සඳහා 2018 වසරේ සිට මේ දක්වා රුපියල් මිලියන 2,500 ක් පමණ වැය කර ඇති බවත්, ඒ සඳහා ආයුර්වේද ඖෂධ පිළිබඳ ගුරුකම් පුහුණුව ලබා දීමට අවශ්‍ය උපකරණ, බුද්ධිමය හා තාක්ෂණික උපකරණ ලබා දීමට රුපියල් මිලියන 1,500 ක් පමණ වැය කර ඇති බවත් රජය පවසයි. ශ්‍රී ලංකාවේ ආයුර්වේද ඖෂධ පිළිබඳ ගුරුකම් පුහුණුව ලබා දීම සඳහා 2018 වසරේ සිට මේ දක්වා රුපියල් මිලියන 2,500 ක් පමණ වැය කර ඇති බවත්, ඒ සඳහා ආයුර්වේද ඖෂධ පිළිබඳ ගුරුකම් පුහුණුව ලබා දීමට අවශ්‍ය උපකරණ, බුද්ධිමය හා තාක්ෂණික උපකරණ ලබා දීමට රුපියල් මිලියන 1,500 ක් පමණ වැය කර ඇති බවත් රජය පවසයි. ශ්‍රී ලංකාවේ ආයුර්වේද ඖෂධ පිළිබඳ ගුරුකම් පුහුණුව ලබා දීම සඳහා 2018 වසරේ සිට මේ දක්වා රුපියල් මිලියන 2,500 ක් පමණ වැය කර ඇති බවත්, ඒ සඳහා ආයුර්වේද ඖෂධ පිළිබඳ ගුරුකම් පුහුණුව ලබා දීමට අවශ්‍ය උපකරණ, බුද්ධිමය හා තාක්ෂණික උපකරණ ලබා දීමට රුපියල් මිලියන 1,500 ක් පමණ වැය කර ඇති බවත් රජය පවසයි.
+            "Oioi meu amor, feliz 3 meses, como se sente sabendo que já se passou esse tempo? Esse tempo, sabe o que eu percebí com esses 3 meses de namoro? Bom, a primeira coisa foi ter notado que eu tenho mais ciúmes do que eu pensava ter KKKKKKK mas isso faz parte, a segunda é que não importa quantos dias passem e o quanto as coisas apertem, eu sempre irei continuar amando vc mais e mais, ao olhar seus olhos lindos na call percebo a janela para sua alma, e sabe o que essa janela me mostra? Uma pessoa brilhante, uma pessoa cheia de energia e determinação.",
             "E isso é o que mais amo em vc, que vc tenta se esforçar e é determinada às coisas. Quando acontece algo ruim vc sempre consegue se reconstituir, e embora algumas vezes fique meio diferente, sigo sempre te amando. As vezes tudo o que eu quero é poder te abraçar pq pqp, seu abraço deve ser o mais quentinho, o mais confortável, o mais TUDO DE BOM desse mundo.",
             "Quando te conhecí naquele grupo, nunca imaginei que hoje estaríamos aqui tão longe e juntos. Você nunca sai da minha cabeça e estou sempre pensando em você, em como está e quando você some eu me preocupo bastante, pq pode estar acontecendo qualquer coisa na sua vida, e eu quero sempre ajudar sabe? Eu quero poder ser a pessoa em quem vc mais confia e quero ser quem vc vai ver como porto seguro.",
             "O jeito em como vc se veste, o jeito em como vc conversa, o jeito em como você canta, me encanta muito, cada detalhe de cada uma dessas coisas citadas continua sempre a me encantar mais e mais. Sua beleza é inacabável, um verdadeiro esplendor. Seu sorriso sempre anima meus dias, mesmo que aquele esteja sendo um dia batido pra caralho, seu sorriso sempre levanta meu astral. É só o sorriso mais lindo que eu já vi em toda a terra e sempre me tira sorrisos bobos quando vejo ele.",
@@ -376,13 +408,18 @@
             document.getElementById('next-paragraph').disabled = index === paragraphs.length - 1;
         }
 
-        document.getElementById('next-paragraph').addEventListener('click', () => {
-            console.log('Botão Próximo parágrafo clicado');
-            if (currentParagraph < paragraphs.length - 1) {
-                currentParagraph++;
-                showParagraph(currentParagraph);
-            }
-        });
+        const nextParagraphBtn = document.getElementById('next-paragraph');
+        if (nextParagraphBtn) {
+            nextParagraphBtn.addEventListener('click', () => {
+                console.log('Botão Próximo parágrafo clicado');
+                if (currentParagraph < paragraphs.length - 1) {
+                    currentParagraph++;
+                    showParagraph(currentParagraph);
+                }
+            });
+        } else {
+            console.error('Botão next-paragraph não encontrado');
+        }
     </script>
 </body>
 </html>
