@@ -17,6 +17,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+            margin-top: 20px;
         }
         .step.active {
             display: block;
@@ -33,6 +34,7 @@
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
             transition: background-color 0.3s;
         }
         button:hover {
@@ -40,16 +42,17 @@
         }
         #music-controls {
             margin-bottom: 20px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
 <div id="music-controls">
-    <button id="playPauseBtn" onclick="toggleMusic()">Tocar Música</button>
+    <button id="playPauseBtn">Tocar Música</button>
 </div>
 
-<audio id="background-music" loop>
+<audio id="background-music" loop preload="auto">
     <source src="musicas/musica1.mp3" type="audio/mp3">
     Seu navegador não suporta áudio.
 </audio>
@@ -111,7 +114,7 @@
         alert('Finalizado!');
     }
 
-    function toggleMusic() {
+    playPauseBtn.addEventListener('click', function () {
         if (audio.paused) {
             audio.play().then(() => {
                 playPauseBtn.textContent = 'Pausar Música';
@@ -122,7 +125,7 @@
             audio.pause();
             playPauseBtn.textContent = 'Tocar Música';
         }
-    }
+    });
 </script>
 
 </body>
